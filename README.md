@@ -4,11 +4,11 @@ A ASP.NET application utilizing the Web Api framework that makes it easier to bu
 
 
 ## Installation
-1. Clone the repository using HTTPS 'git clone https://github.com/ulvestad/.NET-Web-Api-.git'
+1. Clone the repository using HTTPS `git clone https://github.com/ulvestad/.NET-Web-Api-.git`
 2. Run Microsoft Visual Studio
-3. Click 'File -> Open -> Project/Solution'
-4. Navigate to the folder where you cloned the project. '.NET-Web-Api-\ServerServices\'
-5. Choose file 'ServerServices.sln'
+3. Click `File -> Open -> Project/Solution`
+4. Navigate to the folder where you cloned the project. `.NET-Web-Api-\ServerServices\`
+5. Choose file `ServerServices.sln`
 6. Run the application
 
 ## Usage
