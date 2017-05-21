@@ -13,8 +13,8 @@ A ASP.NET application utilizing the Web Api framework that makes it easier to bu
 
 ## Usage
 
-[1]: CRUD operations
-[2]: Search function for tables
+[1]: CRUD operations<br />
+[2]: Search function for tables<br />
 [3]: Master listning 
 
 ![alt text](https://raw.githubusercontent.com/ulvestad/.NET-Web-Api-/master/ServerServices/img/application.png)
