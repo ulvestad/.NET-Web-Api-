@@ -1,20 +1,31 @@
 # .NET-Web-Api-
 
-TODO: Write a project description
-## Installation
+A ASP.NET application utilizing the Web Api framework that makes it easier to build HTTP services that reach a broad range of clients. This is a simple RESTful application with CRUD operations on a database, ServerDB, with tables {Servers, Services, ServerAndServices}. 
 
-TODO: Describe the installation process
+
+## Installation
+1. Clone the repository using HTTPS 'git clone https://github.com/ulvestad/.NET-Web-Api-.git'
+2. Run Microsoft Visual Studio
+3. Click 'File -> Open -> Project/Solution'
+4. Navigate to the folder where you cloned the project. '.NET-Web-Api-\ServerServices\'
+5. Choose file 'ServerServices.sln'
+6. Run the application
+
 ## Usage
 
-TODO: Write usage instructions
+[1]: CRUD operations
+[2]: Search function for tables
+[3]: Master listning 
+
+![alt text](https://raw.githubusercontent.com/ulvestad/.NET-Web-Api-/master/ServerServices/img/application.png)
 
 ## Contributers
 Simen Ulvestad
 
-## Contributing
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
+## Contribution
+- Fork it!
+- Create your feature branch: `git checkout -b my-new-feature`
+- Commit your changes: `git commit -am 'Add some feature'`
+- Push to the branch: `git push origin my-new-feature`
+- Submit a pull request :D
 
