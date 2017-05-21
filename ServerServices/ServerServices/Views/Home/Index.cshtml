@@ -1,0 +1,387 @@
+﻿<!--Simple css styling --------------------------------------------------------------->
+<style>
+    table {
+    border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid #848484;
+        text-align: left;
+    }
+    th, td {
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    tr:hover {
+        background-color: #d6d6d6
+    }
+</style>
+
+<!--HTML content for mainpage ---------------------------------------------------------->
+<div style="display:flex;">
+    <div style="margin:25px; overflow:auto; width:auto; min-width:210px;">
+        <div style="margin-bottom:20px;">
+            Table:<select id="selecter" onchange="changeTable()" style="margin-left:20px;" >
+                <option value="Servers">Servers</option>
+                <option value="Services">Services</option>
+                <option value="ServerAndServices">ServerAndServices</option>
+            </select>
+        </div>
+        <button id="searchButton" style="margin-top:0px; margin-bottom: 8px; width:35px" type="button" onclick="search()">🔍</button>
+        <input id="searchValue" style="margin-top:0px; margin-bottom: 8px; width:165px;" placeholder="Search..." />
+        <div style="overflow:auto; max-height:300px; min-width:210px;">
+            <table id="dbTable">
+                <thead>
+                    <tr>
+                        <td style="min-width:60px;"><span id="column1" style="font-weight:bold">ID: </span></td>
+                        <td style="min-width:140px;"><span id="column2" style="font-weight:bold">Name: </span></td>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div style="margin:25px">
+            <p style="margin-bottom:20px;">CRUD operations:</p>
+            <button id ="upd" style="margin-bottom:10px; min-width:130px" type="button" onclick="prepareCrudOperations('insert')">Insert</button> <br>
+            <button id ="ins" style="margin-bottom:10px; min-width:130px" type="button" onclick="prepareCrudOperations('update')">Update</button> <br>
+            <button id ="del" style="margin-bottom:10px; min-width:130px" type="button" onclick="prepareCrudOperations('delete')">Delete</button> <br>
+            <hr>
+            <input id="tableId" style="width:35px; visibility:hidden; text-align: center;" type="text" readonly/> 
+            <input style="visibility:hidden" id="inputValueField" type="text"/>
+            <button id ="performActionButton" style="visibility:hidden; margin-left:5px;" type="button" onclick="performAction()">✔️</button> <br>
+            <p id="feedBack" style="opacity:0.7; font-size:10px"></p>
+    </div>
+</div>
+<div style=" margin-left:25px;">
+    <p id="masterListningInfo">Master listing of ():</p>
+    <hr>
+    <div id="listingDiv"></div>
+    <br>
+</div>
+
+<!--Javascript: ----------------------------------------------------------------------->
+<script>
+
+    var action;
+    var table = document.getElementById("dbTable");
+    var row;
+    var selectedTable;
+
+
+    //GET request for Servers table -------------------------------------------------
+    //fills HTML table using json responds
+    function loadHTMLTable(selectedTable) {
+        document.getElementById("feedBack").innerHTML = "";
+        var xhttp = new XMLHttpRequest();
+        var url = "/api/" + selectedTable
+
+        xhttp.open("GET", url, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //do something to with response
+                var json = JSON.parse(xhttp.response);
+                var table = document.getElementById("dbTable").getElementsByTagName('tbody')[0];
+                var rowCount = table.rows.length;
+                for (var x = rowCount -1; x > -1; x--) {
+                    table.deleteRow(x);
+                }
+                for (key in json) {
+                    var row = table.insertRow(table.rows.length);
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    if (selectedTable == "ServerAndServices") {
+                        document.getElementById("column1").innerHTML = "Server_id:"
+                        document.getElementById("column2").innerHTML = "Service_id:"
+                        cell1.innerHTML = json[key].Server_id;
+                        cell2.innerHTML = json[key].Service_id;
+                        document.getElementById("searchButton").disabled = true;
+                        document.getElementById("searchValue").disabled = true;
+                    } else {
+                        document.getElementById("column1").innerHTML = "ID:"
+                        document.getElementById("column2").innerHTML = "Name:"
+                        cell1.innerHTML = json[key].Id;
+                        cell2.innerHTML = json[key].Name;
+                        document.getElementById("del").disabled = false;
+                        document.getElementById("ins").disabled = false;
+                        document.getElementById("upd").disabled = false;
+                        document.getElementById("searchButton").disabled = false;
+                        document.getElementById("searchValue").disabled = false;
+                    }
+                    
+                }
+            }
+        };
+        xhttp.send();
+    }
+
+    //PUT request for Servers table -------------------------------------------------
+    //parameter from input field
+    function updateRow() {
+        var xhttp = new XMLHttpRequest();
+        var params = "Name=" + document.getElementById("inputValueField").value;
+        var url = "/api/" + selectedTable+"/" + row;
+        if (selectedTable == "ServerAndServices") {
+            url = "/api/" + selectedTable + "/" + row;
+            params = "Server_id=" + document.getElementById("tableId").value + "&Service_id=" + document.getElementById("inputValueField").value;
+        }
+        xhttp.open("PUT", url, true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //do something to with response
+                loadHTMLTable(selectedTable);
+                document.getElementById("feedBack").innerHTML = "Updated row successfully!";
+            }
+        };
+        xhttp.send(params);
+    }
+
+    //POST request for Servers table -------------------------------------------------
+    //parameter from input field
+    function insertRow() {
+        var xhttp = new XMLHttpRequest();
+        var params = "Name=" + document.getElementById("inputValueField").value;
+        var url = "/api/" + selectedTable
+        if (selectedTable == "ServerAndServices") {
+            params = "Server_id=" + document.getElementById("tableId").value + "&Service_id=" + document.getElementById("inputValueField").value;
+        }
+        console.log(params)
+        xhttp.open("POST", url, true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //do something to with response
+                loadHTMLTable(selectedTable);
+                document.getElementById("feedBack").innerHTML = "Insert of row completed successfully!";
+            }
+            
+        };
+        xhttp.send(params); 
+    }
+
+    //DELETE request for Servers table -------------------------------------------------
+    function deleteRow() {
+        var xhttp = new XMLHttpRequest();
+        var url = "/api/" + selectedTable+"/" +row;
+
+        xhttp.open("DELETE", url, true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //do something to with response
+                document.getElementById("feedBack").innerHTML = "Deleted row successfully!";
+                loadHTMLTable(selectedTable);
+            }
+            
+        };
+        xhttp.send();
+    }
+
+    //Prepare CRUD operation -------------------------------------------------
+    function prepareCrudOperations(action) {
+        document.getElementById("tableId").readOnly = false;
+        document.getElementById("inputValueField").value = "";
+        document.getElementById("tableId").placeholder = "";
+        document.getElementById("tableId").value = "";
+        document.getElementById("inputValueField").style.visibility = "visible";
+        document.getElementById("tableId").style.visibility = "visible";
+        document.getElementById("performActionButton").style.visibility = "visible";
+        document.getElementById("feedBack").style.visibility = "visible";
+        document.getElementById("inputValueField").readOnly = false;
+        if (action == "insert") {
+            if (selectedTable == "ServerAndServices") {
+                document.getElementById("feedBack").innerHTML = "Row to be inserted";
+                document.getElementById("tableId").placeholder = "";
+                document.getElementById("tableId").readOnly = false;
+            } else {
+                document.getElementById("feedBack").innerHTML = "Row to be inserted";
+                document.getElementById("tableId").placeholder = "Auto";
+            }
+        }
+        if (action == "update") {
+               document.getElementById("feedBack").innerHTML = "Click on Row to be " + action + "d and edit value";
+}
+        else {
+            document.getElementById("feedBack").innerHTML = "Row to be "+action+"ed";
+        }
+        
+        this.action = action;
+    }
+
+    //Perform CRUD operation -------------------------------------------------
+    function performAction() {
+        document.getElementById("inputValueField").style.visibility = "hidden";
+        document.getElementById("performActionButton").style.visibility = "hidden";
+        document.getElementById("tableId").style.visibility = "hidden";
+        var functionName = action + "Row()";
+        var tmpFunc = new Function(functionName);
+        tmpFunc();
+        document.getElementById("inputValueField").value = "";
+        document.getElementById("tableId").placeholder = "";
+
+    }
+
+    //load default "Servers" table when application starts ----------------------
+    window.onload = function () {
+        selectedTable = document.getElementById("selecter").value;
+        loadHTMLTable(selectedTable);
+    };
+
+    //table click handler --------------------------------------------------------
+    table.onclick = function (e) {
+        e = e || window.event;
+        var data = [];
+        var target = e.srcElement || e.target;
+        while (target && target.nodeName !== "TR" && target.parentNode.parentNode.nodeName !== "THEAD") {
+            target = target.parentNode;
+        }
+        if (selectedTable == "ServerAndServices") {
+            document.getElementById("masterListningInfo").innerHTML = "";
+        } else {
+            document.getElementById("masterListningInfo").innerHTML = "Master listing of (" + target.getElementsByTagName("td")[0].innerHTML + "): ";
+            masterList(target.getElementsByTagName("td")[0].innerHTML);
+        }
+        if (target) {
+            var cells = target.getElementsByTagName("td");
+            for (var i = 0; i < cells.length; i++) {
+                data.push(cells[i].innerHTML);
+                   
+                if (action == "insert") {
+                    document.getElementById("tableId").placeholder = "Auto";
+                    document.getElementById("inputValueField").value = "";
+                }
+                else if (action == "delete") {
+                    document.getElementById("inputValueField").value = data[1]
+                    document.getElementById("tableId").placeholder = data[0];
+                    document.getElementById("inputValueField").readOnly = true;
+                }
+                else if (action == "update") {
+                    if (selectedTable == "ServerAndServices") {
+                        document.getElementById("inputValueField").value = data[1]
+                        document.getElementById("tableId").value = data[0];
+                    } else {
+                        document.getElementById("inputValueField").value = data[1]
+                        document.getElementById("tableId").placeholder = data[0];
+                        document.getElementById("tableId").readOnly = true;
+                    }
+                }
+                row = data[0];
+            }
+        }
+
+    };
+
+    //change table --------------------------------------------------------
+    function changeTable() {
+        selectedTable = document.getElementById("selecter").value;
+        loadHTMLTable(selectedTable);
+        document.getElementById("inputValueField").style.visibility = "hidden";
+        document.getElementById("performActionButton").style.visibility = "hidden";
+        document.getElementById("tableId").style.visibility = "hidden";
+        document.getElementById("feedBack").value = "";
+        if (selectedTable == "ServerAndServices") {
+            document.getElementById("masterListningInfo").innerHTML = "";
+        } else {
+            document.getElementById("masterListningInfo").innerHTML = "Master listing of ():";
+        }
+        var myNode = document.getElementById("listingDiv");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+    }
+
+    //search table --------------------------------------------------------
+    function search() {
+        var xhttp = new XMLHttpRequest();
+        var url = "/api/" + selectedTable;
+        var searchValue = document.getElementById("searchValue").value;
+   
+        xhttp.open("GET", url, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //do something to with response
+                var json = JSON.parse(xhttp.response);
+                var table = document.getElementById("dbTable").getElementsByTagName('tbody')[0];
+                var rowCount = table.rows.length;
+                for (var x = rowCount - 1; x > -1; x--) {
+                    table.deleteRow(x);
+                }
+                for (key in json) {
+                    if (json[key].Name.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1 || json[key].Id.toString().toLowerCase().indexOf(searchValue.toLowerCase()) !== -1) {
+                        var row = table.insertRow(table.rows.length);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        cell1.innerHTML = json[key].Id;
+                        cell2.innerHTML = json[key].Name;  
+                    }
+                }
+            }
+        };
+        xhttp.send();
+    };
+
+    //master listing --------------------------------------------------------
+    function masterList(id) {
+        var xhttp = new XMLHttpRequest();
+        var url = "/api/ServerAndServices"  
+
+        xhttp.open("GET", url, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //do something to with response
+                var json = JSON.parse(xhttp.response);
+                var myNode = document.getElementById("listingDiv");
+                while (myNode.firstChild) {
+                    myNode.removeChild(myNode.firstChild);
+                }
+                for (key in json) {
+                    if (selectedTable == "Servers") {
+                        if (parseInt(json[key].Server_id) != parseInt(id)) {
+                            continue;
+                        }
+                        getServiceOrServer("Services", json[key].Service_id, "Service:");
+  
+                    }
+                    if (selectedTable == "Services") {
+                        if (parseInt(json[key].Service_id) != parseInt(id)) {
+                            continue;
+                        }
+                        getServiceOrServer("Servers", json[key].Service_id, "Server:");
+                    }
+                    
+                }
+            }
+        };
+        xhttp.send();
+    };
+
+    //get service or server using id --------------------------------------------------------
+    function getServiceOrServer(table, id, string) {
+        var xhttp = new XMLHttpRequest();
+        var url = "/api/" +table+"/" +id; 
+
+        xhttp.open("GET", url, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //do something to with response
+                var json = JSON.parse(xhttp.response);
+                var para = document.createElement("p");
+
+                var node = document.createTextNode(string+ " "+ json.Name);
+                para.appendChild(node);
+                var element = document.getElementById("listingDiv");
+                element.appendChild(para);
+            }
+        };
+        xhttp.send();
+        
+    }
+
+</script>
+

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ServerDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Servers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="Services">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="ServerAndServices">
+    <Key>
+      <PropertyRef Name="Server_id" />
+      <PropertyRef Name="Service_id" />
+    </Key>
+    <Property Name="Server_id" Type="Int32" Nullable="false" />
+    <Property Name="Service_id" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityContainer Name="ServerDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Servers" EntityType="Self.Servers" />
+    <EntitySet Name="Services" EntityType="Self.Services" />
+    <EntitySet Name="ServerAndServices" EntityType="Self.ServerAndServices" />
+  </EntityContainer>
+</Schema>

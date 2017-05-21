@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ServerDBModelStoreContainer" CdmEntityContainer="ServerDBEntities">
+    <EntitySetMapping Name="Servers">
+      <EntityTypeMapping TypeName="ServerDBModel.Servers">
+        <MappingFragment StoreEntitySet="Servers">
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Services">
+      <EntityTypeMapping TypeName="ServerDBModel.Services">
+        <MappingFragment StoreEntitySet="Services">
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="ServerAndServices" TypeName="ServerDBModel.ServerAndServices" StoreEntitySet="ServerAndServices">
+      <EndProperty Name="Services">
+        <ScalarProperty Name="Id" ColumnName="Service_id" />
+      </EndProperty>
+      <EndProperty Name="Servers">
+        <ScalarProperty Name="Id" ColumnName="Server_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+  </EntityContainerMapping>
+</Mapping>

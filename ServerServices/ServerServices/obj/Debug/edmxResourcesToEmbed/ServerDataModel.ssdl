@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ServerDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'D:\INFRONTCASE\SERVERSERVICES\SERVERSERVICES\APP_DATA\SERVERDB.MDF.dbo.ServerAndServices' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="ServerAndServices">
+    <Key>
+      <PropertyRef Name="Server_id" />
+      <PropertyRef Name="Service_id" />
+    </Key>
+    <Property Name="Server_id" Type="int" Nullable="false" />
+    <Property Name="Service_id" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Servers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Services">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <Association Name="Server_id_fk">
+    <End Role="Servers" Type="Self.Servers" Multiplicity="1" />
+    <End Role="ServerAndServices" Type="Self.ServerAndServices" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Servers">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="ServerAndServices">
+        <PropertyRef Name="Server_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="Service_id_fk">
+    <End Role="Services" Type="Self.Services" Multiplicity="1" />
+    <End Role="ServerAndServices" Type="Self.ServerAndServices" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Services">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="ServerAndServices">
+        <PropertyRef Name="Service_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ServerDBModelStoreContainer">
+    <EntitySet Name="Servers" EntityType="Self.Servers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Services" EntityType="Self.Services" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ServerAndServices" EntityType="Self.ServerAndServices" store:Type="Tables" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [ServerAndServices].[Server_id] AS [Server_id], 
+    [ServerAndServices].[Service_id] AS [Service_id]
+    FROM [dbo].[ServerAndServices] AS [ServerAndServices]</DefiningQuery>
+    </EntitySet>
+    <AssociationSet Name="Server_id_fk" Association="Self.Server_id_fk">
+      <End Role="Servers" EntitySet="Servers" />
+      <End Role="ServerAndServices" EntitySet="ServerAndServices" />
+    </AssociationSet>
+    <AssociationSet Name="Service_id_fk" Association="Self.Service_id_fk">
+      <End Role="Services" EntitySet="Services" />
+      <End Role="ServerAndServices" EntitySet="ServerAndServices" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

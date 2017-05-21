@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ServerDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="ServerDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Servers" EntityType="ServerDBModel.Servers" />
+    <EntitySet Name="Services" EntityType="ServerDBModel.Services" />
+    <AssociationSet Name="ServerAndServices" Association="ServerDBModel.ServerAndServices">
+      <End Role="Servers" EntitySet="Servers" />
+      <End Role="Services" EntitySet="Services" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Servers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Services" Relationship="ServerDBModel.ServerAndServices" FromRole="Servers" ToRole="Services" />
+  </EntityType>
+  <EntityType Name="Services">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Servers" Relationship="ServerDBModel.ServerAndServices" FromRole="Services" ToRole="Servers" />
+  </EntityType>
+  <Association Name="ServerAndServices">
+    <End Type="ServerDBModel.Servers" Role="Servers" Multiplicity="*" />
+    <End Type="ServerDBModel.Services" Role="Services" Multiplicity="*" />
+  </Association>
+</Schema>
